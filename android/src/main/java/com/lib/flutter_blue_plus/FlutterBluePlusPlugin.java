@@ -622,11 +622,29 @@ public class FlutterBluePlusPlugin implements
                             return;
                         }
 
+                        HashMap<String, Object> data = call.arguments();
+                        List<String> withServices =    (List<String>) data.get("with_services");
+                        // services
+                        for (int i = 0; i < withServices.size(); i++) {
+                            ParcelUuid s = ParcelUuid.fromString(uuid128(withServices.get(i)));
+                        }
+
                         // this includes devices connected by other apps
                         List<BluetoothDevice> devices = mBluetoothManager.getConnectedDevices(BluetoothProfile.GATT);
 
                         List<HashMap<String, Object>> devList = new ArrayList<HashMap<String, Object>>();
                         for (BluetoothDevice d : devices) {
+                            for(ParcelUuid uuid in devices.getUuids())
+                            {
+                                println(uuid);
+                                /*
+                                for(ParcelUuid uuid in devices.getUuids())
+                                {
+                                    
+                                }
+                                */
+                            }
+                            d.getUuids()
                             devList.add(bmBluetoothDevice(d));
                         }
 

@@ -157,8 +157,8 @@ class FlutterBluePlus {
   /// Retrieve a list of devices currently connected to the system
   /// - The list includes devices connected to by *any* app
   /// - You must still call device.connect() to connect them to *your app*
-  static Future<List<BluetoothDevice>> get systemDevices async {
-    var result = await _invokeMethod('getSystemDevices');
+  static Future<List<BluetoothDevice>> getSystemDevices({List<Guid> withServices = const []}) async {
+    var result = await _invokeMethod('getSystemDevices', {'with_services': withServices.map((s) => s.str).toList()});
     var r = BmDevicesList.fromMap(result);
     for (BmBluetoothDevice device in r.devices) {
       if (device.platformName != null) {
@@ -441,17 +441,17 @@ class FlutterBluePlus {
         _mtuValues.remove(r.remoteId);
 
         // clear lastDescs (resets 'isNotifying')
-        _lastDescs.remove(r.remoteId); 
+        _lastDescs.remove(r.remoteId);
 
         // clear lastChrs (api consistency)
-        _lastChrs.remove(r.remoteId); 
+        _lastChrs.remove(r.remoteId);
 
         // cancel & delete subscriptions
-        _deviceSubscriptions[r.remoteId]?.forEach((s) => s.cancel()); 
-        _deviceSubscriptions.remove(r.remoteId); 
+        _deviceSubscriptions[r.remoteId]?.forEach((s) => s.cancel());
+        _deviceSubscriptions.remove(r.remoteId);
 
         // Note: to make FBP easier to use, we do not clear `knownServices`,
-        // otherwise `servicesList` would be more annoying to use. We also 
+        // otherwise `servicesList` would be more annoying to use. We also
         // do not clear `bondState`, for faster performance.
 
         // autoconnect
@@ -602,8 +602,11 @@ class FlutterBluePlus {
   @Deprecated('Use adapterState instead')
   static Stream<BluetoothAdapterState> get state => adapterState;
 
-  @Deprecated('Use systemDevices instead')
-  static Future<List<BluetoothDevice>> get connectedSystemDevices => systemDevices;
+  @Deprecated('Use getSystemDevices instead')
+  static Future<List<BluetoothDevice>> get connectedSystemDevices => getSystemDevices();
+
+  @Deprecated('Use getSystemDevices instead')
+  static Future<List<BluetoothDevice>> get systemDevices => getSystemDevices();
 
   @Deprecated('No longer needed, remove this from your code')
   static void get instance => null;
